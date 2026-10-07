@@ -1,0 +1,39 @@
+services:
+  app:
+    image: integration-hub:latest
+    container_name: integration-hub-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/integrationhub
+      SPRING_DATASOURCE_USERNAME: integrationuser
+      SPRING_DATASOURCE_PASSWORD: integrationpassword
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+
+  postgres:
+    image: postgres:16
+    container_name: integration-hub-postgres
+    environment:
+      POSTGRES_DB: integrationhub
+      POSTGRES_USER: integrationuser
+      POSTGRES_PASSWORD: integrationpassword
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: integration-hub-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+volumes:
+  postgres_data:
